@@ -1,4 +1,4 @@
-class questionAnswerGenerator
+class QuestionAnswerGenerator
 {
 
     constructor(amount_of_questions, range_of_numbers)
@@ -7,6 +7,7 @@ class questionAnswerGenerator
         this.questions = [];
         this.answers_options = [];
         this.answers = [];
+        this.marks = 0;
         this.#generateQuestions(amount_of_questions, range_of_numbers);
         this.#generateAnswers(amount_of_questions, range_of_numbers);
     }
@@ -60,13 +61,13 @@ class questionAnswerGenerator
         }
      }
 
-     displayQuestion(question_number)
+     displayQuestion(question_number, text_width, text_height)
      {
         // Questionaire box
         stroke(125);
         strokeWeight(5);
         fill(0);
-        rect(0, 0, width, height/5);
+        rect(0, 0, text_width, text_height);
         // Questions
         fill(255);
         stroke(255);
@@ -74,16 +75,18 @@ class questionAnswerGenerator
         textSize(35);
         textAlign(CENTER,CENTER);
         // textFont();
-        text(this.questions[question_number], width/2, (height/5)/2);
+        text(this.questions[question_number], text_width/2, text_height/2);
      }
 
-     checkAnswer(question_number ,chosen_answer)
+     checkAnswer(question_number ,chosen_answer, score)
      {
         if(this.answers[question_number] == chosen_answer)
         {
             game_stage++;
             score[question_number] = "Correct";
             toggle_options = !toggle_options;
+            player_rod_line_length = player_rod_line_length - 40;
+            this.marks++;
         }
         else
         {
@@ -91,6 +94,18 @@ class questionAnswerGenerator
             score[question_number] = "Wrong";
             toggle_options = !toggle_options;
         }
+     }
+
+     displayEndGameMarks()
+     {
+        fill("#4d92b2");
+        rect(width/2 - 105, height/5, 190, 2*height/5+52);
+        fill(0);
+        textAlign(CENTER,CENTER);
+        textSize(35);
+        text("Marks: ", width/2, height/5 + 50);
+        textSize(50);
+        text(this.marks + "/5", width/2, 2.5*height/5);
      }
 
      // private helper functions
