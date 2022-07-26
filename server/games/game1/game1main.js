@@ -1,5 +1,6 @@
 // game state
 var game_start = false;
+var gameEnded = false;
 
 // an object set to contain the questions
 var questions_set = null;
@@ -12,6 +13,7 @@ var option1, option2, option3, option4;
 
 // a boolean to toggle options
 var toggle_options = true;
+var toggle_timer = true;
 
 // buttons dimension
 var answer_button_width;
@@ -27,6 +29,10 @@ var ai_rod_line_speed = 0.1;
 //number of questions
 var number_of_questions = 5;
 
+//timer
+var timer = 0;
+var completionTime = 0;
+
 function setup()
 {
 	createCanvas(800, 800);
@@ -38,7 +44,7 @@ function setup()
     answer_button_height = height/10;
     
     player = new CharacterGenerator("assets/player1.png", "assets/player_fish.png",100, 2*height/5-40);
-    ai_character = new CharacterGenerator("assets/ai_char.png", "assets/ai_fish.png",width-150, 2*height/5-40);
+    ai_character = new CharacterGenerator("assets/ai_fisherman.png", "assets/ai_fish.png",width-150, 2*height/5-40);
 
     scenery = new SceneryGenerator(0, height/5, width, 3*height/5);
 
@@ -53,30 +59,30 @@ function setup()
      option1 = createButton("A) ");
      option1.position(0, answer_button_height*8);
      option1.size(answer_button_width, answer_button_height);
-     option1.mouseClicked(function(){questions_set.checkAnswer(game_stage, option1.value(),scoreboard.score)});
+     option1.mouseClicked(function(){questions_set.checkAnswer(game_stage, option1.value(),scoreboard.score, option1, gameEnded)});
 
      // Option 2
      option2 = createButton("B) ");
      option2.position(answer_button_width, answer_button_height*8);
      option2.size(answer_button_width, answer_button_height);
-     option2.mouseClicked(function(){questions_set.checkAnswer(game_stage, option2.value(),scoreboard.score)});
+     option2.mouseClicked(function(){questions_set.checkAnswer(game_stage, option2.value(),scoreboard.score, option2, gameEnded)});
 
      // Option 3
      option3 = createButton("C) ");
      option3.position(0, answer_button_height*9);
      option3.size(answer_button_width, answer_button_height);
-     option3.mouseClicked(function(){questions_set.checkAnswer(game_stage, option3.value(),scoreboard.score)});
+     option3.mouseClicked(function(){questions_set.checkAnswer(game_stage, option3.value(),scoreboard.score, option3, gameEnded)});
 
      // Option 4
      option4 = createButton("D) ");
      option4.position(answer_button_width, answer_button_height*9);
      option4.size(answer_button_width, answer_button_height);
-     option4.mouseClicked(function(){questions_set.checkAnswer(game_stage, option4.value(),scoreboard.score)});
+     option4.mouseClicked(function(){questions_set.checkAnswer(game_stage, option4.value(),scoreboard.score, option4, gameEnded)});
 
     // Restart Game Button
     restart_button = createButton("Play again!");
     restart_button.position(width/2 - 105, 2*height/3);
-    restart_button.size(190,76);
+    restart_button.size(210,76);
     restart_button.mouseClicked(restart_game);
 }
 
@@ -84,7 +90,6 @@ function draw()
 {
     if(game_start)
     {
-        
         game_start_button.hide();
 
         //game scenery
@@ -106,35 +111,30 @@ function draw()
         option3.show();
         option4.show();
 
-        if(game_stage == 0)
+        if(game_stage < number_of_questions)
         {
             updateQuestionAndOptions(game_stage);
-        }
-        else if(game_stage == 1)
-        {
-            updateQuestionAndOptions(game_stage);
-        }
-        else if(game_stage == 2)
-        {
-            updateQuestionAndOptions(game_stage);
-        }
-        else if(game_stage == 3)
-        {
-            updateQuestionAndOptions(game_stage)
-        }
-        else if(game_stage == 4)
-        {
-            updateQuestionAndOptions(game_stage);
+            gameTimer();
+            if(questions_set.isWrong)
+            {
+                printRetry();
+            }
         }
         else
         {
+            gameEnded = true;
             ai_rod_line_speed = 0;
             restart_button.show();
-            questions_set.displayEndGameMarks();
+            if(toggle_timer)
+            {
+                completionTime = timer;
+                toggle_timer = !toggle_timer;
+            }
+            questions_set.displayEndGameMarks(completionTime);
+            timer = 0;
         }
 
         ai_rod_line_length -= ai_rod_line_speed;
-
     }
     else 
     {
@@ -158,6 +158,8 @@ function draw()
     }
 }
 
+// helper functions
+
 function updateOptionButton(game_stage)
 {
     // Answer Options
@@ -165,18 +167,22 @@ function updateOptionButton(game_stage)
     // Option 1
     option1.html("A) " + questions_set.answers_options[game_stage][0]);
     option1.value(questions_set.answers_options[game_stage][0]);
+    option1.style('background-color', 'lightgrey');
 
     // Option 2
     option2.html("B) " + questions_set.answers_options[game_stage][1]);
     option2.value(questions_set.answers_options[game_stage][1]);
+    option2.style('background-color', 'lightgrey');
 
     // Option 3
     option3.html("C) " + questions_set.answers_options[game_stage][2]);
     option3.value(questions_set.answers_options[game_stage][2]);
+    option3.style('background-color', 'lightgrey');
 
     // Option 4
     option4.html("D) " + questions_set.answers_options[game_stage][3]);
     option4.value(questions_set.answers_options[game_stage][3]);
+    option4.style('background-color', 'lightgrey');
 }
 
 function updateQuestionAndOptions(game_stage)
@@ -203,6 +209,32 @@ function restart_game()
     scoreboard = new Scoreboard(number_of_questions);
 
     game_stage = 0;
+    
+    toggle_timer = !toggle_timer;
+
+    gameEnded = false;
 
     ai_rod_line_speed = 0.05;
+}
+
+function gameTimer()
+{
+  push();
+  fill(255,0,0);
+  stroke(255,0,0);
+  textSize(35);
+  text("Time: " + timer.toFixed(1) + " seconds", width/2, height/5 + 25);
+  pop();
+
+  timer += deltaTime/1000;
+}
+
+function printRetry()
+{
+    push();
+    fill("#6effa9");
+    stroke("#6effa9");
+    textSize(35);
+    text("Incorrect, please try again!", width/2, 3*height/4);
+    pop();
 }

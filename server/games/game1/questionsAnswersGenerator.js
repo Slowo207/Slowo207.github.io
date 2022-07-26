@@ -7,7 +7,8 @@ class QuestionAnswerGenerator
         this.questions = [];
         this.answers_options = [];
         this.answers = [];
-        this.marks = 0;
+        this.attempts = 0;
+        this.isWrong = false;
         this.#generateQuestions(amount_of_questions, range_of_numbers);
         this.#generateAnswers(amount_of_questions, range_of_numbers);
     }
@@ -78,7 +79,7 @@ class QuestionAnswerGenerator
         text(this.questions[question_number], text_width/2, text_height/2);
      }
 
-     checkAnswer(question_number ,chosen_answer, score)
+     checkAnswer(question_number ,chosen_answer, score, option_button, game_ended)
      {
         if(this.answers[question_number] == chosen_answer)
         {
@@ -87,25 +88,45 @@ class QuestionAnswerGenerator
             toggle_options = !toggle_options;
             player_rod_line_length = player_rod_line_length - 40;
             this.marks++;
+            this.isWrong = false;
+            if(!gameEnded)
+            {
+                this.attempts++;
+            }
         }
         else
         {
-            game_stage++;
-            score[question_number] = "Wrong";
-            toggle_options = !toggle_options;
+            option_button.style('background-color', '#F85C70');
+            this.isWrong = true;
+            if(!gameEnded)
+            {
+                this.attempts++;
+            }
         }
      }
 
-     displayEndGameMarks()
+     displayEndGameMarks(time)
      {
+        push();
+
+        // Scoreboard background
         fill("#4d92b2");
-        rect(width/2 - 105, height/5, 190, 2*height/5+52);
+        rect(width/2 - 105, height/5, 210, 2*height/5+52);
+
+        // heading
         fill(0);
         textAlign(CENTER,CENTER);
         textSize(35);
-        text("Marks: ", width/2, height/5 + 50);
+        text("Attempts: ", width/2, height/5 + 50);
+        text("Time: ", width/2, 2.5*height/5);
+
+        // Score
+        fill("#6effa9");
         textSize(50);
-        text(this.marks + "/5", width/2, 2.5*height/5);
+        text(this.attempts, width/2, 2*height/5);
+        text(time.toFixed(1) + "s", width/2, 3*height/5);
+
+        pop();
      }
 
      // private helper functions
