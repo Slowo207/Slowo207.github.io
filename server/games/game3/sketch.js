@@ -15,20 +15,33 @@ function setup() {
     [1, 100, 5, true],
     [1, 100, 1, true]
   ]
+
+  //loading assets
+  registerAsset = loadImage('assets/Register.png')
   
-  registerArray.push(new Register(100+75*0, 400, 75, 200, 50))
-  registerArray.push(new Register(100+75*1, 400, 75, 200, 20))
-  registerArray.push(new Register(100+75*2, 400, 75, 200, 10))
-  registerArray.push(new Register(100+75*3, 400, 75, 200, 5))
+  registerArray.push(new Register(104+75*0, 404, 71, 195, 50, "Note50.png", 195, 0, 0))
+  registerArray.push(new Register(103+75*1, 404, 71, 195, 20, "Note20.png", 195, 0, 0))
+  registerArray.push(new Register(102+75*2, 404, 71, 195, 10, "Note10.png", 195, 0, 0))
+  registerArray.push(new Register(100+75*3, 404, 71, 195, 5, "Note5.png", 195, 0, 0)), 
   
-  registerArray.push(new Register(100+75*0, 600, 75, 100, 1))
-  registerArray.push(new Register(100+75*1, 600, 75, 100, 0,50))
-  registerArray.push(new Register(100+75*2, 600, 75, 100, 0.25))
-  registerArray.push(new Register(100+75*3, 600, 75, 100, 0.10))
+  registerArray.push(new Register(104+75*0, 600, 75, 100, 1, "GoldCoin.png", 75, 10, 10))
+  registerArray.push(new Register(100+75*1, 600, 75, 100, 0.50, "SilverCoin.png", 75, 10, 10))
+  registerArray.push(new Register(100+75*2, 600, 75, 100, 0.25, "BrassCoin.png", 75, 10, 10))
+  registerArray.push(new Register(100+75*3, 600, 75, 100, 0.10, "BrassCoin.png", 75, 10, 10))
   
   //registerArray.push()
   
   fishPrice(levelArray[level])
+}
+
+function draw() {
+  background(220);
+  
+  if(gameState == 0){
+    startPage()
+  }else if (gameState == 1){
+    gamePage()
+  }
 }
 
 function fishPrice(priceArray){
@@ -43,16 +56,6 @@ function fishPrice(priceArray){
   }  
 }
 
-function draw() {
-  background(220);
-  
-  if(gameState == 0){
-    startPage()
-  }else if (gameState == 1){
-    gamePage()
-  }
-}
-
 function startPage(){
   textSize(32)
   fill("black")
@@ -62,6 +65,8 @@ function startPage(){
 }
 
 function gamePage(){
+  image(registerAsset, 100, 400, 300, 300)
+
   textSize(32)
   fill("black")
   text(score, 50, 50)
@@ -70,16 +75,6 @@ function gamePage(){
   text("Change", 250, 100)
   text(change, 300, 150)
   text("Give Change", 150, 375)
-  
-  text("50", 100+75*0, 500)
-  text("20", 100+75*1, 500)
-  text("10", 100+75*2, 500)
-  text("5", 100+75*3, 500)
-  
-  text("1", 100+75*0, 650)
-  text(".50", 100+75*1, 650)
-  text(".25", 100+75*2, 650)
-  text(".10", 100+75*3, 650)
 
   noFill()
   //register box
@@ -100,6 +95,16 @@ function gamePage(){
   }  
   
   fishArray[fish].draw()
+
+  text("50", 120+75*0, 510)
+  text("20", 120+75*1, 510)
+  text("10", 120+75*2, 510)
+  text("5", 125+75*3, 510)
+  
+  text("1", 133+75*0, 650)
+  text(".50", 120+75*1, 650)
+  text(".25", 120+75*2, 650)
+  text(".10", 120+75*3, 650)
 }
 
 function mouseClicked(){
