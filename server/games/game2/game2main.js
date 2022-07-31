@@ -12,6 +12,7 @@ var option1, option2, option3, option4;
 
 // a boolean to toggle options
 var toggle_options = true;
+var toggle_bgm = true;
 
 // buttons dimension
 var answer_button_width;
@@ -20,6 +21,16 @@ var answer_button_height;
 //number of questions
 var number_of_questions = 5;
 
+// bgm
+var bgm;
+
+function preload()
+{
+    soundFormats('mp3');
+
+    bgm = loadSound("sounds/Summer - Bensound - Royalty Free Music - No Copyright Music.mp3");
+    bgm.setVolume(0.2);
+}
 
 function setup()
 {
@@ -82,6 +93,11 @@ function draw()
     {
         game_start_button.hide();
 
+        if(toggle_bgm)
+        {
+            startBGM();
+        }
+
         option1.show();
         option2.show();
         option3.show();
@@ -103,6 +119,7 @@ function draw()
             option4.hide();
             restart_button.show();
             questions_set.displayEndGameMarks();
+            endBGM();
         }
     }
     else 
@@ -179,4 +196,18 @@ function restart_game()
     questions_set = new Game2QuestionAnswerGenerator();
 
     game_stage = 0;
+}
+
+function startBGM()
+{
+    bgm.play();
+    bgm.loop();
+
+    toggle_bgm = !toggle_bgm;
+}
+
+function endBGM()
+{
+    bgm.stop();
+    toggle_bgm = !toggle_bgm;
 }
