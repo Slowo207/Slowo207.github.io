@@ -1,13 +1,8 @@
 function setup() {
   createCanvas(800, 800);
   registerArray = []
-  fishArray = []
-  fish = 0
-  cost = 0
-  change = 0 
-  gameState = 0
-  score = 0
-  level = 4
+  clientAssetArray = ["Boy.png", "Girl.png", "Grandma.png"]
+  fishAssetArray = ["Fish_blue.png", "Fish_green.png", "Fish_orange.png", "Fish_purple.png", "Fish_yellow.png"]
   levelArray = [
     [0.1, 1, 0.1, false],
     [0.1, 1, 0.05, false],
@@ -16,9 +11,13 @@ function setup() {
     [1, 100, 1, true]
   ]
 
+  resetGame()
+
   //loading assets
   registerAsset = loadImage('assets/Register.png')
-  
+
+  priceTag = loadImage('assets/PriceTag.png')
+
   registerArray.push(new Register(104+75*0, 404, 71, 195, 50, "Note50.png", 195, 0, 0))
   registerArray.push(new Register(103+75*1, 404, 71, 195, 20, "Note20.png", 195, 0, 0))
   registerArray.push(new Register(102+75*2, 404, 71, 195, 10, "Note10.png", 195, 0, 0))
@@ -28,9 +27,19 @@ function setup() {
   registerArray.push(new Register(100+75*1, 600, 75, 100, 0.50, "SilverCoin.png", 75, 10, 10))
   registerArray.push(new Register(100+75*2, 600, 75, 100, 0.25, "BrassCoin.png", 75, 10, 10))
   registerArray.push(new Register(100+75*3, 600, 75, 100, 0.10, "BrassCoin.png", 75, 10, 10))
-  
+}
+
+function resetGame(){
+  fishArray = []
+  changeArray = [[],[],[],[],[],[],[],[]]
+  fish = 0
+  cost = 0
+  change = 0 
+  gameState = 0
+  score = 0
+  level = 4
+
   //registerArray.push()
-  
   fishPrice(levelArray[level])
 }
 
@@ -41,6 +50,8 @@ function draw() {
     startPage()
   }else if (gameState == 1){
     gamePage()
+  }else if (gameState == 2){
+    endPage()
   }
 }
 
@@ -52,7 +63,7 @@ function fishPrice(priceArray){
   
   for(i=0; i < 10; i++){
     cost = getRndInteger(startPrice, endPrice, rD)
-    fishArray.push(new Fish(cost, findPaid(cost,endPrice, increment)))
+    fishArray.push(new Fish(cost, findPaid(cost,endPrice, increment), clientAssetArray[getRndInteger(0,3,true)], fishAssetArray[getRndInteger(0,5,true)]))
   }  
 }
 
@@ -70,7 +81,7 @@ function gamePage(){
   textSize(32)
   fill("black")
   text(score, 50, 50)
-  text("Fish", 400, 450)
+  //text("Fish", 400, 450)
   text("Paid", 100, 100)
   text("Change", 250, 100)
   text(change, 300, 150)
@@ -107,6 +118,15 @@ function gamePage(){
   text(".10", 120+75*3, 650)
 }
 
+function endPage(){
+  textSize(32)
+  fill("black")
+  text("End", 370, 350)
+  text(score, 370, 300)
+  noFill()
+  rect(300, 300, 200, 100)
+}
+
 function mouseClicked(){
   if(gameState == 0){
     if((mouseX > 300 && mouseX < 500) && (mouseY > 300 && mouseY < 400)){
@@ -125,6 +145,16 @@ function mouseClicked(){
       }
       change = 0
       fish += 1
+      if(fish > fishArray.length -1){
+        gameState = 2
+      }
+    }
+  }else if (gameState == 2){
+    console.log("endGame1")
+    if((mouseX > 300 && mouseX < 500) && (mouseY > 300 && mouseY < 400)){
+      console.log("end")
+      gameState = 0
+      resetGame()
     }
   }
 }
